@@ -43,7 +43,7 @@ public class DrivetrainSubsystem extends Subsystem {
             }
         }
 
-        (new Notifier(() -> {
+        new Notifier(() -> {
             if (DriverStation.getInstance().isDisabled()) {
                 return;
             }
@@ -61,7 +61,7 @@ public class DrivetrainSubsystem extends Subsystem {
 
             this.leftSparks[0].set(this.leftOutput);
             this.rightSparks[0].set(this.rightOutput);
-        })).startPeriodic(0.01);
+        }).startPeriodic(0.01);
     }
 
     public void set(double left, double right) {

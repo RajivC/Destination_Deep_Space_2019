@@ -29,12 +29,12 @@ public class ClawSubsystem extends Subsystem {
         this.solenoid = new DoubleSolenoid(6, 7);
         this.open = true;
 
-        (new Notifier(() -> {
+        new Notifier(() -> {
             this.solenoid.set(this.open ? DoubleSolenoid.Value.kReverse : DoubleSolenoid.Value.kForward);
 
             this.left.set(this.leftOutput);
             this.right.set(this.rightOutput);
-        })).startPeriodic(0.1);
+        }).startPeriodic(0.1);
     }
 
     public boolean isOpen() {
