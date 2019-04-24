@@ -27,7 +27,7 @@ public class ClawSubsystem extends Subsystem {
         this.right = RobotMap.Claw.RIGHT_SPARK.createSpark();
 
         this.solenoid = new DoubleSolenoid(6, 7);
-        this.open = true;
+        this.open = false;
 
         new Notifier(() -> {
             this.solenoid.set(this.open ? DoubleSolenoid.Value.kReverse : DoubleSolenoid.Value.kForward);
