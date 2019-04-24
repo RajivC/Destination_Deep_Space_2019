@@ -87,6 +87,7 @@ public class ElevatorSubsystem extends Subsystem {
     public void configureMotionSettings(int velocity, int acceleration) {
         this.talons[0].configMotionCruiseVelocity(velocity);
         this.talons[0].configMotionAcceleration(acceleration);
+        this.talons[0].configMotionSCurveStrength(3);
     }
 
     public void configureLimitSwitchEnable(boolean enabled) {

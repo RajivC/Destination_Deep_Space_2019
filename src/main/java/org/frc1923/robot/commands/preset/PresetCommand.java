@@ -128,12 +128,12 @@ public class PresetCommand extends Command {
     public enum Preset {
 
         BASE(0, 0),
-        LOW(13500, 11000), // comp = 15,000
-        MED(53000, 48000),
-        HIGH(92000, 87500),
-        SHIP(42000, 42000),
+        LOW(15000, 12500),
+        MED(54500, 49500),
+        HIGH(93500, 89000),
+        SHIP(43500, 43500),
         SHIP_FRONT(0, 0),
-        CLIMB(58500, 58500); //57500
+        CLIMB(58500, 58500);
 
         private int hatchPosition;
         private int cargoPosition;

@@ -17,7 +17,7 @@ public class Robot extends TimedRobot {
     public static Limelight backLimelight;
 
     public static final boolean DEBUG = false;
-    public static final boolean PRACTICE_ROBOT = true;
+    public static final boolean PRACTICE_ROBOT = false;
 
     @Override
     public void robotInit() {
