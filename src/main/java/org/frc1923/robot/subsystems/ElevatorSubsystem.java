@@ -8,13 +8,13 @@ import com.ctre.phoenix.motorcontrol.RemoteLimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 import org.frc1923.robot.Robot;
 import org.frc1923.robot.RobotMap;
 import org.frc1923.robot.commands.elevator.ElevatorControllerCommand;
 import org.frc1923.robot.utilities.Dashboard;
+import org.frc1923.robot.utilities.notifier.NamedNotifier;
 
 public class ElevatorSubsystem extends Subsystem {
 
@@ -25,10 +25,14 @@ public class ElevatorSubsystem extends Subsystem {
     private DoubleSolenoid solenoid;
     private boolean brakeEngaged;
 
-    public DoubleSolenoid forks = new DoubleSolenoid(0, 1);
+    public DoubleSolenoid forks = new DoubleSolenoid(RobotMap.Climber.FWD_PORT, RobotMap.Climber.REV_PORT);
 
     private int position;
     private int holdPosition;
+    private int velocity;
+
+    private ControlMode controlMode = ControlMode.PercentOutput;
+    private double demand = 0;
 
     private ElevatorSubsystem() {
         this.talons = new TalonSRX[RobotMap.Elevator.TALONS.length];
@@ -70,18 +74,23 @@ public class ElevatorSubsystem extends Subsystem {
         this.solenoid = new DoubleSolenoid(RobotMap.Elevator.BRAKE_FWD_PORT, RobotMap.Elevator.BRAKE_REV_PORT);
         this.brakeEngaged = false;
 
-        new Notifier(() -> {
+        new NamedNotifier(() -> {
             this.position = this.talons[0].getSelectedSensorPosition();
-        }).startPeriodic(0.1);
+            this.velocity = this.talons[0].getSelectedSensorVelocity();
+        }, "ElevatorSubsystem.Get0", 0.1).start();
 
-        new Notifier(() -> {
+        new NamedNotifier(() -> {
             Dashboard.putBoolean("Elevator Fwd Lmt", this.talons[1].getSensorCollection().isFwdLimitSwitchClosed());
             Dashboard.putBoolean("Elevator Rev Lmt", this.talons[1].getSensorCollection().isRevLimitSwitchClosed());
             Dashboard.putNumber("Elevator Position", this.getPosition());
             Dashboard.putNumber("Elevator Hld Position", this.getHoldPosition());
 
             this.solenoid.set(this.brakeEngaged ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
-        }).startPeriodic(0.1);
+        }, "ElevatorSubsystem.Set0", 0.1).start();
+
+        new NamedNotifier(() -> {
+            this.talons[0].set(this.controlMode, this.demand);
+        }, "ElevatorSubsystem.Set1", 0.05).start();
     }
 
     public void configureMotionSettings(int velocity, int acceleration) {
@@ -103,15 +112,16 @@ public class ElevatorSubsystem extends Subsystem {
     }
 
     public double getEncoderVelocity() {
-        return this.talons[0].getSelectedSensorVelocity();
+        return this.velocity;
     }
 
-    public void set(double output) {
-        this.set(ControlMode.PercentOutput, output);
+    public void set(double demand) {
+        this.set(ControlMode.PercentOutput, demand);
     }
 
-    public void set(ControlMode controlMode, double output) {
-        this.talons[0].set(controlMode, output);
+    public void set(ControlMode controlMode, double demand) {
+        this.controlMode = controlMode;
+        this.demand = demand;
     }
 
     @Override

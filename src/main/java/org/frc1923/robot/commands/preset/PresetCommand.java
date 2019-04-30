@@ -131,7 +131,7 @@ public class PresetCommand extends Command {
         LOW(15000, 12500),
         MED(54500, 49500),
         HIGH(93500, 89000),
-        SHIP(43500, 43500),
+        SHIP(45000, 45000),
         SHIP_FRONT(0, 0),
         CLIMB(58500, 58500);
 

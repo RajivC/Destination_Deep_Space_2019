@@ -1,7 +1,6 @@
 package org.frc1923.robot.utilities.logger;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Notifier;
+import org.frc1923.robot.utilities.notifier.NamedNotifier;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -12,20 +11,15 @@ public class NetworkLogger {
 
     private static Host[] hosts = {
             new Host("robotRadio", "10.19.23.1"),
-            new Host("roboRIO.eth0", "10.19.23.2"),
-            new Host("roboRIO.lo", "127.0.0.1"),
             new Host("fieldRadio", "10.19.23.4"),
             new Host("driverStation", "10.19.23.5"),
-            new Host("limelightFront", "10.19.23.8"),
-            new Host("limelightBack", "10.19.23.9")
+            new Host("limelightBack", "10.19.23.9"),
     };
     private static Map<Host, Double> rtt = new ConcurrentHashMap<>();
 
-    private static boolean fmsPresent;
-
     public static void startLogger() {
         for (Host host : hosts) {
-            new Notifier(() -> {
+            new NamedNotifier(() -> {
                 double tripTime = ping(host.getAddress());
 
                 if (tripTime > 0 && rtt.getOrDefault(host, -1.0) == -1) {
@@ -39,23 +33,19 @@ public class NetworkLogger {
                 }
 
                 rtt.put(host, tripTime);
-            }).startPeriodic(0.5);
+            }, "NetworkLogger.Ping." + host.getName(), 1).start();
         }
 
-        new Notifier(() -> {
-            fmsPresent = fmsPresent || DriverStation.getInstance().isFMSAttached();
+        new NamedNotifier(() -> {
+            Logger.DataPair[] dataPairs = new Logger.DataPair[hosts.length];
 
-            if (fmsPresent) {
-                Logger.DataPair[] dataPairs = new Logger.DataPair[hosts.length];
-
-                for (int i = 0; i < hosts.length; i++) {
-                    Host host = hosts[i];
-                    dataPairs[i] = new Logger.DataPair(host.getName(), rtt.getOrDefault(host, -1.0));
-                }
-
-                Logger.logEvent("NetworkLogger", "Network Report", dataPairs);
+            for (int i = 0; i < hosts.length; i++) {
+                Host host = hosts[i];
+                dataPairs[i] = new Logger.DataPair(host.getName(), rtt.getOrDefault(host, -1.0));
             }
-        }).startPeriodic(1);
+
+            Logger.logEvent("NetworkLogger", "Network Report", dataPairs);
+        }, "NetworkLogger.Report", 1).start();
     }
 
     private static double ping(String host) {
@@ -68,10 +58,15 @@ public class NetworkLogger {
 
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("round-trip")) {
+                    reader.close();
+                    process.destroy();
+
                     return Double.parseDouble(line.split("/")[3]);
                 }
             }
 
+            reader.close();
+            process.destroy();
         } catch (Exception e) {
             e.printStackTrace();
         }

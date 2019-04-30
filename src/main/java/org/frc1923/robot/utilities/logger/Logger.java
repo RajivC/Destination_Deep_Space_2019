@@ -1,9 +1,9 @@
 package org.frc1923.robot.utilities.logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
-import org.frc1923.robot.Robot;
+
+import org.frc1923.robot.utilities.notifier.NamedNotifier;
 
 import java.io.*;
 import java.util.Queue;
@@ -17,9 +17,12 @@ public class Logger {
     private static boolean usbPresent;
 
     static {
+        double start = Timer.getFPGATimestamp();
+
         buffer = new ConcurrentLinkedQueue<>();
 
         File loggingDir = new File("/media/sda1");
+
         usbPresent = loggingDir.exists() && loggingDir.isDirectory();
 
         try {
@@ -28,11 +31,11 @@ public class Logger {
             usbPresent = false;
         }
 
-        new Notifier(() -> {
+        new NamedNotifier(() -> {
             while (!buffer.isEmpty()) {
                 String message = buffer.poll();
 
-                if (Robot.DEBUG || !usbPresent) {
+                if (!usbPresent) {
                     System.out.println(message);
                 }
 
@@ -44,7 +47,7 @@ public class Logger {
                     writer.write(message);
                     writer.newLine();
                 } catch (Exception e) {
-                    System.out.println(message);
+
                 }
             }
 
@@ -55,9 +58,9 @@ public class Logger {
                     e.printStackTrace();
                 }
             }
-        }).startPeriodic(0.1);
+        }, "Logger.FileWriter", 0.25).start();
 
-        new Notifier(() -> {
+        new NamedNotifier(() -> {
             DriverStation ds = DriverStation.getInstance();
             Logger.logEvent(
                     "DriverStation", "Debug",
@@ -72,9 +75,11 @@ public class Logger {
                     new DataPair("matchTime", ds.getMatchTime()),
                     new DataPair("gameSpecificMessage", ds.getGameSpecificMessage())
             );
-        }).startPeriodic(5);
+        }, "Logger.MatchReport", 2.5).start();
 
         NetworkLogger.startLogger();
+
+        System.out.println("Done starting in " + (Timer.getFPGATimestamp() - start) + " seconds.");
     }
 
     public static void logEvent(Object caller, String message, DataPair... dataPairs) {

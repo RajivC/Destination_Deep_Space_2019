@@ -5,7 +5,7 @@ import org.frc1923.robot.commands.claw.ClawToggleCommand;
 import org.frc1923.robot.commands.climber.ForkCommand;
 import org.frc1923.robot.commands.VisionToggleCommand;
 import org.frc1923.robot.commands.climber.ClimbBrakeCommand;
-import org.frc1923.robot.commands.drivetrain.DriveTimeCommand;
+import org.frc1923.robot.commands.drivetrain.DriveOutputCommand;
 import org.frc1923.robot.commands.drivetrain.VisionAlignCommand;
 import org.frc1923.robot.commands.elevator.ElevatorBrakeToggleCommand;
 import org.frc1923.robot.commands.elevator.ElevatorPositionCommand;
@@ -50,7 +50,7 @@ public class OI {
         this.driver.circle.whileHeldOnce(new VisionAlignCommand(Robot.frontLimelight));
         this.driver.square.whileHeldOnce(new VisionAlignCommand(Robot.backLimelight));
 
-        this.driver.pad.whileHeld(new DriveTimeCommand());
+        this.driver.pad.whileHeld(new DriveOutputCommand(0.60));
 
         this.driver.triangle.whileHeldOnce(new PresetCommand(PresetCommand.Preset.CLIMB));
         this.driver.cross.whileHeldOnce(CGUtils.parallel(

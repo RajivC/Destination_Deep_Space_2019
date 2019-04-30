@@ -14,17 +14,17 @@ public class IntakeControllerCommand extends Command {
 
     @Override
     protected void execute() {
-        double output = OI.getInstance().getOperator().getRightY();
+        double demand = OI.getInstance().getOperator().getRightY();
 
-        if (Math.abs(output) < 0.15) {
-            output = 0;
+        if (Math.abs(demand) < 0.15) {
+            demand = 0;
         }
 
         if (!Robot.PRACTICE_ROBOT) {
-            output *= -1;
+            demand *= -1;
         }
 
-        IntakeSubsystem.getInstance().set(output);
+        IntakeSubsystem.getInstance().set(demand);
     }
 
     @Override

@@ -78,7 +78,7 @@ public class VisionAlignCommand extends Command {
             power = (15 - ta) * (0.025);
         } else {
             turn = (turningConstant / 20) * tx;
-            power = -Math.pow(2.8, -1.0 / 3.0 * (ta + 1.2));
+            power = -Math.pow(2.8, -1.0 / 3.0 * (ta + 1.4));
         }
 
         if (!Robot.PRACTICE_ROBOT) {
@@ -116,7 +116,7 @@ public class VisionAlignCommand extends Command {
         if (this.limelight.getLocation().equals("limelight-front")) {
             return this.tx.get() < 2 && this.ta.get() > 13 && this.targetValid;
         } else {
-            return this.tx.get() < 2 && this.ta.get() > 7.5 && this.targetValid;
+            return this.tx.get() < 2 && this.ta.get() > 8 && this.targetValid;
         }
     }
 

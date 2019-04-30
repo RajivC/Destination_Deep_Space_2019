@@ -5,13 +5,13 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 import org.frc1923.robot.Robot;
 import org.frc1923.robot.RobotMap;
 import org.frc1923.robot.commands.wrist.WristHoldCommand;
 import org.frc1923.robot.utilities.Dashboard;
+import org.frc1923.robot.utilities.notifier.NamedNotifier;
 
 public class WristSubsystem extends Subsystem {
 
@@ -21,6 +21,9 @@ public class WristSubsystem extends Subsystem {
 
     private int position;
     private int holdPosition;
+
+    private ControlMode controlMode = ControlMode.PercentOutput;
+    private double demand = 0;
 
     private WristSubsystem() {
         this.talon = RobotMap.Wrist.TALON.createTalon();
@@ -42,12 +45,16 @@ public class WristSubsystem extends Subsystem {
 
         this.holdPosition = this.getPosition();
 
-        new Notifier(() -> {
-            this.position = this.talon.getSelectedSensorPosition();
-
+        new NamedNotifier(() -> {
             Dashboard.putNumber("Wrist Position", this.getPosition());
             Dashboard.putBoolean("Wrist Rev Lmt", this.talon.getSensorCollection().isRevLimitSwitchClosed());
-        }).startPeriodic(0.1);
+
+            this.position = this.talon.getSelectedSensorPosition();
+        }, "IntakeSubsystem.Set0", 0.1).start();
+
+        new NamedNotifier(() -> {
+            this.talon.set(this.controlMode, this.demand);
+        }, "IntakeSubsystem.Set1", 0.05).start();
     }
 
     public void setHoldPosition(int holdPosition) {
@@ -58,16 +65,17 @@ public class WristSubsystem extends Subsystem {
         return this.holdPosition;
     }
 
-    public void set(double power) {
-        this.set(ControlMode.PercentOutput, power);
+    public void set(double demand) {
+        this.set(ControlMode.PercentOutput, demand);
     }
 
     public void resetHoldPosition() {
         this.holdPosition = this.getPosition();
     }
 
-    public void set(ControlMode controlMode, double output) {
-        this.talon.set(controlMode, output);
+    public void set(ControlMode controlMode, double demand) {
+        this.controlMode = controlMode;
+        this.demand = demand;
     }
 
     public int getPosition() {

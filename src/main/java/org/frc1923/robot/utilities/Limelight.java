@@ -2,7 +2,8 @@ package org.frc1923.robot.utilities;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Notifier;
+
+import org.frc1923.robot.utilities.notifier.NamedNotifier;
 
 public class Limelight {
 
@@ -10,7 +11,6 @@ public class Limelight {
     private Pipeline pipeline;
 
     private NetworkTable table;
-    private Notifier notifier;
 
     public Limelight(String location) {
         this.location = "limelight-" + location;
@@ -18,12 +18,11 @@ public class Limelight {
 
         this.table = NetworkTableInstance.getDefault().getTable(this.location);
 
-        this.notifier = new Notifier(() -> {
+        new NamedNotifier(() -> {
             this.table.getEntry("camMode").setNumber(0);
             this.table.getEntry("ledMode").setNumber(0);
             this.table.getEntry("pipeline").setNumber(this.pipeline.getId());
-        });
-        this.notifier.startPeriodic(0.1);
+        }, "Limelight." + location, 0.1).start();
     }
 
     public void setEnableTargeting(boolean enableTargeting) {

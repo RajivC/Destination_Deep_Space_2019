@@ -2,15 +2,13 @@ package org.frc1923.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.sensors.PigeonIMU;
-import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 import org.frc1923.robot.RobotMap;
 import org.frc1923.robot.commands.intake.IntakeControllerCommand;
+import org.frc1923.robot.utilities.notifier.NamedNotifier;
 
 public class IntakeSubsystem extends Subsystem {
 
@@ -21,15 +19,17 @@ public class IntakeSubsystem extends Subsystem {
     private DoubleSolenoid solenoid;
 
     private boolean extended;
+    private double demand;
 
     private IntakeSubsystem() {
         this.talon = RobotMap.Intake.TALON.createTalon();
         this.solenoid = new DoubleSolenoid(RobotMap.Intake.FWD_PORT, RobotMap.Intake.REV_PORT);
         this.extended = false;
 
-        new Notifier(() -> {
+        new NamedNotifier(() -> {
             this.solenoid.set(this.extended ? DoubleSolenoid.Value.kReverse : DoubleSolenoid.Value.kForward);
-        }).startPeriodic(0.1);
+            this.talon.set(ControlMode.PercentOutput, this.demand);
+        }, "IntakeSubsystem.Set0", 0.1).start();
     }
 
     public void setExtended(boolean extended) {
@@ -40,8 +40,8 @@ public class IntakeSubsystem extends Subsystem {
         return this.extended;
     }
 
-    public void set(double power) {
-        this.talon.set(ControlMode.PercentOutput, power);
+    public void set(double demand) {
+        this.demand = demand;
     }
 
     @Override

@@ -4,30 +4,32 @@ import edu.wpi.first.wpilibj.command.Command;
 
 import org.frc1923.robot.subsystems.DrivetrainSubsystem;
 
-public class DriveTimeCommand extends Command {
+public class DriveOutputCommand extends Command {
 
-    private double power;
+    private double demand;
 
-    protected void initialize() {
-        this.setTimeout(2000);
-        this.power = 0.40;
+    public DriveOutputCommand(double demand) {
+        this.demand = demand;
     }
 
+    @Override
     protected void execute() {
-        DrivetrainSubsystem.getInstance().set(this.power, this.power);
+        DrivetrainSubsystem.getInstance().set(this.demand, this.demand);
     }
 
+    @Override
     protected void end() {
         DrivetrainSubsystem.getInstance().set(0, 0);
     }
 
+    @Override
     protected void interrupted() {
         this.end();
     }
 
     @Override
     protected boolean isFinished() {
-        return this.isTimedOut();
+        return false;
     }
 
 }

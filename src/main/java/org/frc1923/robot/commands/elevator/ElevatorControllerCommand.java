@@ -16,9 +16,9 @@ public class ElevatorControllerCommand extends Command  {
 
     @Override
     protected void execute() {
-        double output = OI.getInstance().getOperator().getLeftTrigger() > 0 ? -OI.getInstance().getOperator().getLeftTrigger() : OI.getInstance().getOperator().getRightTrigger();
+        double demand = OI.getInstance().getOperator().getLeftTrigger() > 0 ? -OI.getInstance().getOperator().getLeftTrigger() : OI.getInstance().getOperator().getRightTrigger();
 
-        if (output == 0) {
+        if (demand == 0) {
             if (ElevatorSubsystem.getInstance().getHoldPosition() == -1923) {
                 ElevatorSubsystem.getInstance().resetHoldPosition();
                 Logger.logEvent(this, "Resetting hold position", new Logger.DataPair("holdPosition", ElevatorSubsystem.getInstance().getHoldPosition()));
@@ -27,7 +27,7 @@ public class ElevatorControllerCommand extends Command  {
             ElevatorSubsystem.getInstance().set(ControlMode.MotionMagic, ElevatorSubsystem.getInstance().getHoldPosition());
         } else {
             ElevatorSubsystem.getInstance().setHoldPosition(-1923);
-            ElevatorSubsystem.getInstance().set(output);
+            ElevatorSubsystem.getInstance().set(demand);
         }
     }
 

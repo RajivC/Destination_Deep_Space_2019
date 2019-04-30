@@ -15,24 +15,24 @@ public class ClawControllerCommand extends Command {
 
     @Override
     protected void execute() {
-        double output = OI.getInstance().getOperator().getLeftY();
+        double demand = OI.getInstance().getOperator().getLeftY();
 
-        if (Math.abs(output) < 0.15) {
-            output = 0;
+        if (Math.abs(demand) < 0.15) {
+            demand = 0;
         }
 
-        if (output == 0
+        if (demand == 0
                 && ClawSubsystem.getInstance().isOpen()
                 && WristSubsystem.getInstance().getPosition() < 100
                 && ElevatorSubsystem.getInstance().getPosition() < 5000) {
-            output = OI.getInstance().getOperator().getRightY();
+            demand = OI.getInstance().getOperator().getRightY();
 
-            if (Math.abs(output) < 0.15) {
-                output = 0;
+            if (Math.abs(demand) < 0.15) {
+                demand = 0;
             }
         }
 
-        ClawSubsystem.getInstance().set(output, output);
+        ClawSubsystem.getInstance().set(demand, demand);
     }
 
     @Override

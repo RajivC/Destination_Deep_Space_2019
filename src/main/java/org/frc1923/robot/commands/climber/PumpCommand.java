@@ -13,9 +13,7 @@ public class PumpCommand extends Command {
 
     @Override
     protected void execute() {
-        double output = OI.getInstance().getDriver().getLeftTrigger();
-
-        ClimberSubsystem.getInstance().set(output);
+        ClimberSubsystem.getInstance().set(OI.getInstance().getDriver().getLeftTrigger());
     }
 
     @Override

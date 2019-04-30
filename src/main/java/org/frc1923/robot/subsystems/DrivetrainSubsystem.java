@@ -3,12 +3,12 @@ package org.frc1923.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 import org.frc1923.robot.RobotMap;
 import org.frc1923.robot.commands.drivetrain.DriveControllerCommand;
+import org.frc1923.robot.utilities.notifier.NamedNotifier;
 import org.frc1923.robot.utilities.logger.Logger;
 
 public class DrivetrainSubsystem extends Subsystem {
@@ -18,10 +18,10 @@ public class DrivetrainSubsystem extends Subsystem {
     private CANSparkMax[] leftSparks;
     private CANSparkMax[] rightSparks;
 
-    private double leftOutput;
-    private double rightOutput;
+    private double leftDemand;
+    private double rightDemand;
 
-    private double outputUpdated;
+    private double lastUpdated;
 
     private DrivetrainSubsystem() {
         this.leftSparks = new CANSparkMax[RobotMap.Drivetrain.LEFT_SPARKS.length];
@@ -43,31 +43,31 @@ public class DrivetrainSubsystem extends Subsystem {
             }
         }
 
-        new Notifier(() -> {
+        new NamedNotifier(() -> {
             if (DriverStation.getInstance().isDisabled()) {
                 return;
             }
 
-            if (Timer.getFPGATimestamp() - this.outputUpdated > 0.50) {
+            if (Timer.getFPGATimestamp() - this.lastUpdated > 0.50) {
                 Logger.logEvent(
                         this, "Drivetrain Safety Triggered",
-                        new Logger.DataPair("leftOutput", this.leftOutput),
-                        new Logger.DataPair("rightOutput", this.rightOutput)
+                        new Logger.DataPair("leftDemand", this.leftDemand),
+                        new Logger.DataPair("rightDemand", this.rightDemand)
                 );
 
-                this.leftOutput = 0;
-                this.rightOutput = 0;
+                this.leftDemand = 0;
+                this.rightDemand = 0;
             }
 
-            this.leftSparks[0].set(this.leftOutput);
-            this.rightSparks[0].set(this.rightOutput);
-        }).startPeriodic(0.01);
+            this.leftSparks[0].set(this.leftDemand);
+            this.rightSparks[0].set(this.rightDemand);
+        }, "DrivetrainSubsystem.Set0", 0.02).start();
     }
 
     public void set(double left, double right) {
-        this.leftOutput = left;
-        this.rightOutput = right;
-        this.outputUpdated = Timer.getFPGATimestamp();
+        this.leftDemand = left;
+        this.rightDemand = right;
+        this.lastUpdated = Timer.getFPGATimestamp();
     }
 
     @Override

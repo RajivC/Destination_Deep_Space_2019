@@ -21,6 +21,9 @@ public abstract class RobotMap {
                 new MotorController(5)
         };
 
+        public static final int FWD_PORT = 0;
+        public static final int REV_PORT = 1;
+
     }
 
     public static abstract class Drivetrain {
@@ -45,9 +48,7 @@ public abstract class RobotMap {
                 new MotorController(3, true)
         };
 
-
         public static final int TALON_LIMITSWITCH_PORT = 1;
-
 
         public static final int BRAKE_FWD_PORT = 4;
         public static final int BRAKE_REV_PORT = 5;

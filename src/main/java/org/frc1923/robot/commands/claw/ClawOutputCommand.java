@@ -6,17 +6,17 @@ import org.frc1923.robot.subsystems.ClawSubsystem;
 
 public class ClawOutputCommand extends Command {
 
-    private double power;
+    private double demand;
 
-    public ClawOutputCommand(double power) {
+    public ClawOutputCommand(double demand) {
         this.requires(ClawSubsystem.getInstance());
 
-        this.power = power;
+        this.demand = demand;
     }
 
     @Override
     protected void execute() {
-        ClawSubsystem.getInstance().set(this.power, this.power);
+        ClawSubsystem.getInstance().set(this.demand, this.demand);
     }
 
     @Override

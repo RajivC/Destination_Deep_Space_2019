@@ -9,20 +9,20 @@ import org.frc1923.robot.utilities.logger.Logger;
 
 public class WristControllerCommand extends Command {
 
-    private double power;
+    private double demand;
 
-    public WristControllerCommand(double power) {
-        this.power = power;
+    public WristControllerCommand(double demand) {
+        this.demand = demand;
     }
 
     @Override
     protected void initialize() {
-        Logger.logEvent(this, "Initializing", new Logger.DataPair("power", this.power));
+        Logger.logEvent(this, "Initializing", new Logger.DataPair("demand", this.demand));
     }
 
     @Override
     protected void execute() {
-        WristSubsystem.getInstance().set(this.power);
+        WristSubsystem.getInstance().set(this.demand);
     }
 
     @Override

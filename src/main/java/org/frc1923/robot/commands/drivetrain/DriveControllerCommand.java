@@ -24,30 +24,12 @@ public class DriveControllerCommand extends Command {
             power *= -1;
         }
 
-        DrivetrainSubsystem.getInstance().set(
-                this.boundOutput(power + turn),
-                this.boundOutput(power - turn)
-        );
+        DrivetrainSubsystem.getInstance().set(power + turn, power - turn);
     }
 
     @Override
     protected boolean isFinished() {
         return false;
-    }
-
-    @Override
-    protected void end() {
-        // DrivetrainSubsystem.getInstance().stop();
-    }
-
-    /**
-     * Bound the output between -1 and 1
-     *
-     * @param output Desired output value
-     * @return Bounded output
-     */
-    private double boundOutput(double output) {
-        return Math.min(1, Math.max(-1, output));
     }
 
 }
